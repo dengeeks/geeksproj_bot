@@ -16,7 +16,7 @@ async def ban_on_words(message: types.Message):
                 existing= Database().select_users_ban(telegram_id= message.from_user.id)
                 if existing:
                     Database().update_ban_users_count(telegram_id=message.from_user.id)
-                if existing is None:
+                else:
                     Database().insert_ban_users_count(
                         telegram_id=message.from_user.id,
                         bancount=1)

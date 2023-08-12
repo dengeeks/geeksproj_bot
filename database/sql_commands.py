@@ -48,4 +48,28 @@ class Database:
                             )
         self.connection.commit()
 
+    def select_users_for_admin(self):
+        self.cursor.row_factory = lambda cursor,row:{
+            'telegram_id' : row[0],
+            "username" : row[1],
+            "firstname" : row[2]
+        }
+        return self.cursor.execute(sql_queries.select_users_for_admin).fetchall()
+
+    def select_potential_ban_users(self):
+        self.cursor.row_factory = lambda cursor,row:{
+            "telegram_id" : row[0],
+            "username" : row[1],
+            "firstname" : row[2],
+            "Bancount" : row[3]
+        }
+        return self.cursor.execute(sql_queries.select_potential_ban_users).fetchall()
+
+
+
+    def select_all_users(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            'telegram_id': row[0]
+        }
+        return self.cursor.execute(sql_queries.select_all_users).fetchall()
 

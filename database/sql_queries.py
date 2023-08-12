@@ -21,3 +21,7 @@ select_users_ban = '''SELECT Telegram_id FROM users_ban WHERE Telegram_id = (?)'
 update_users_ban_count=('''UPDATE users_ban SET BanCount = BanCount + 1 WHERE Telegram_id = (?)''')
 select_users_counts = '''SELECT BanCount FROM users_ban WHERE Telegram_id = (?)'''
 delete_banned_users = '''DELETE FROM users_ban WHERE Telegram_id = (?)'''
+select_users_for_admin = '''SELECT Telegram_id,Username,Firstname FROM telegram_users'''
+select_potential_ban_users = '''SELECT telegram_users.Telegram_id,telegram_users.Username, telegram_users.Firstname,users_ban.BanCount FROM telegram_users 
+                            JOIN users_ban ON telegram_users.Telegram_id = users_ban.Telegram_id'''
+select_all_users = '''SELECT Telegram_id FROM telegram_users'''

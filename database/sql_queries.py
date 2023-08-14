@@ -15,6 +15,20 @@ create_ban_table = '''
         FOREIGN KEY (Telegram_id) REFERENCES telegram_users(Telegram_id))
 '''
 
+create_user_info_table = '''
+CREATE TABLE IF NOT EXISTS user_info
+        (Id INTEGER PRIMARY KEY,
+        Telegram_id INTEGER,
+        name_of_user CHAR(50),
+        Age INTEGER,
+        Bio CHAR(50),
+        Photo TEXT,
+        UNIQUE (Telegram_id))'''
+
+select_users_info = '''SELECT name_of_user,age,bio,photo FROM user_info WHERE Telegram_id = ?'''
+
+insert_user_info = '''INSERT OR IGNORE INTO user_info VALUES (?,?,?,?,?,?)'''
+
 insert_ban_users_count = '''INSERT OR IGNORE INTO users_ban VALUES (?,?,?)'''
 insert_users = 'INSERT OR IGNORE INTO telegram_users VALUES (?,?,?,?,?)'
 select_users_ban = '''SELECT Telegram_id FROM users_ban WHERE Telegram_id = (?)'''

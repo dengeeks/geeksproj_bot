@@ -25,6 +25,13 @@ CREATE TABLE IF NOT EXISTS user_info
         Photo TEXT,
         UNIQUE (Telegram_id))'''
 
+create_poll_table = '''CREATE TABLE IF NOT EXISTS poll
+                    (ID INTEGER PRIMARY KEY,
+                    IDEA TEXT,
+                    PROBLEMS TEXT,
+                    TELEGRAM_ID INTEGER,
+                    FOREIGN KEY (TELEGRAM_ID) REFERENCES user_info(TELEGRAM_ID))'''
+
 select_users_info = '''SELECT name_of_user,age,bio,photo FROM user_info WHERE Telegram_id = ?'''
 
 insert_user_info = '''INSERT OR IGNORE INTO user_info VALUES (?,?,?,?,?,?)'''
@@ -39,3 +46,6 @@ select_users_for_admin = '''SELECT Telegram_id,Username,Firstname FROM telegram_
 select_potential_ban_users = '''SELECT telegram_users.Telegram_id,telegram_users.Username, telegram_users.Firstname,users_ban.BanCount FROM telegram_users 
                             JOIN users_ban ON telegram_users.Telegram_id = users_ban.Telegram_id'''
 select_all_users = '''SELECT Telegram_id FROM telegram_users'''
+insert_poll_answers = '''INSERT OR IGNORE INTO poll VALUES(?,?,?,?)'''
+select_poll_answers_by_id = '''SELECT id,idea,problems,telegram_id FROM poll WHERE id = (?)'''
+sql_select_all_poll_answers_id = '''SELECT id FROM poll'''

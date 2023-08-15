@@ -14,3 +14,10 @@ class UserState(StatesGroup):
     age = State()
     bio = State()
     photo = State()
+
+class PollState(StatesGroup):
+    idea = State()
+    problems = State()
+
+class AdminPollId(StatesGroup):
+    id = State()

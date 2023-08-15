@@ -13,6 +13,7 @@ class Database:
             print('Database connected successfully')
         self.connection.execute(sql_queries.create_ban_table)
         self.connection.execute(sql_queries.create_user_info_table)
+        self.connection.execute(sql_queries.create_poll_table)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
@@ -87,3 +88,25 @@ class Database:
 
         }
         return self.cursor.execute(sql_queries.select_users_info,(telegram_id,)).fetchall()
+
+    def sql_insert_poll_answers(self, idea,problems,telegram_id):
+        self.cursor.execute(sql_queries.insert_poll_answers,
+                            (None,idea,problems,telegram_id)
+                            )
+        self.connection.commit()
+
+    def sql_select_poll_answers_by_id(self,id):
+        self.cursor.row_factory = lambda cursor,row:{
+            "id" : row[0],
+            "idea" : row[1],
+            "problems" : row[2],
+            'telegram_id': row[3],
+
+        }
+        return self.cursor.execute(sql_queries.select_poll_answers_by_id,(id,)).fetchall()
+
+    def sql_select_all_poll_answers_id(self):
+        self.cursor.row_factory = lambda cursor,row:{
+            "id" : row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_all_poll_answers_id).fetchall()

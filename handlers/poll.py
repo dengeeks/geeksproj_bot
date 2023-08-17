@@ -1,15 +1,19 @@
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from database.sql_commands import Database
-from config import PollState, bot
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from config import PollState
 
 
 
 async def fsm_poll_start(message: types.Message):
-    await message.reply('Какие новые идеи вы можете'
-                        '\nпредложить для улучшения бота?')
-    await PollState.idea.set()
+    telegram = Database().sql_select_admin_list()
+    result = tuple(d['admin_tg_id'] for d in telegram)
+    if message.from_user.id in result:
+        await message.reply('Админ не может пройти опрос!')
+    else:
+        await message.reply('Какие новые идеи вы можете'
+                            '\nпредложить для улучшения бота?')
+        await PollState.idea.set()
 
 
 async def load_idea(message: types.Message,state: FSMContext):

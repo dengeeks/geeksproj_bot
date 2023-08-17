@@ -29,8 +29,23 @@ create_poll_table = '''CREATE TABLE IF NOT EXISTS poll
                     (ID INTEGER PRIMARY KEY,
                     IDEA TEXT,
                     PROBLEMS TEXT,
-                    TELEGRAM_ID INTEGER,
+                    TELEGRAM_ID INTEGER UNIQUE,
                     FOREIGN KEY (TELEGRAM_ID) REFERENCES user_info(TELEGRAM_ID))'''
+
+create_admin_rating_table = '''CREATE TABLE IF NOT EXISTS admin_rating
+                            (id INTEGER PRIMARY KEY,
+                            admin_telegram_id INTEGER,
+                            telegram_id INTEGER,
+                            rating INTEGER,
+                            UNIQUE (telegram_id),
+                            FOREIGN KEY (TELEGRAM_ID) REFERENCES poll(TELEGRAM_ID),
+                            FOREIGN KEY (admin_telegram_id) REFERENCES admin_list(admin_telegram_id))'''
+
+create_admin_table = '''CREATE TABLE IF NOT EXISTS admin_list
+                    (id INTEGER PRIMARY KEY,
+                    admin_telegram_id INTEGER UNIQUE
+                    )'''
+
 
 select_users_info = '''SELECT name_of_user,age,bio,photo FROM user_info WHERE Telegram_id = ?'''
 
@@ -49,3 +64,8 @@ select_all_users = '''SELECT Telegram_id FROM telegram_users'''
 insert_poll_answers = '''INSERT OR IGNORE INTO poll VALUES(?,?,?,?)'''
 select_poll_answers_by_id = '''SELECT id,idea,problems,telegram_id FROM poll WHERE id = (?)'''
 sql_select_all_poll_answers_id = '''SELECT id FROM poll'''
+insert_into_adminrating = '''INSERT OR IGNORE INTO admin_rating VALUES(?,?,?,?)'''
+select_admins_rating = '''SELECT admin_telegram_id,rating FROM admin_rating'''
+select_admin_list = '''SELECT admin_telegram_id FROM admin_list'''
+sql_select_avg_rating = '''SELECT admin_telegram_id,AVG(rating) FROM admin_rating GROUP BY admin_telegram_id'''
+

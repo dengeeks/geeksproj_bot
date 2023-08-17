@@ -19,5 +19,12 @@ class PollState(StatesGroup):
     idea = State()
     problems = State()
 
-class AdminPollId(StatesGroup):
+class AdminId(StatesGroup):
     id = State()
+class AdminAnswer(StatesGroup):
+    answer = State()
+class AdminRating(StatesGroup):
+    rating = State()
+
+
+

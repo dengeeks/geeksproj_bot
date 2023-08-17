@@ -14,6 +14,8 @@ class Database:
         self.connection.execute(sql_queries.create_ban_table)
         self.connection.execute(sql_queries.create_user_info_table)
         self.connection.execute(sql_queries.create_poll_table)
+        self.connection.execute(sql_queries.create_admin_rating_table)
+        self.connection.execute(sql_queries.create_admin_table)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
@@ -110,3 +112,30 @@ class Database:
             "id" : row[0],
         }
         return self.cursor.execute(sql_queries.sql_select_all_poll_answers_id).fetchall()
+
+    def sql_insert_into_adminrate(self,admin_telegram_id,telegram_id,rating):
+        self.cursor.execute(sql_queries.insert_into_adminrating,
+                            (None,admin_telegram_id,telegram_id,rating)
+                            )
+        self.connection.commit()
+
+    def sql_select_admin_list(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            "admin_tg_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_admin_list).fetchall()
+
+    def sql_select_admins_rating(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            "admin_tg_id": row[0],
+            "rating": row[1],
+        }
+        return self.cursor.execute(sql_queries.select_admins_rating).fetchall()
+
+    def sql_avg_rating(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            "admin_tg_id": row[0],
+            "avg_rating": row[1],
+        }
+        return self.cursor.execute(sql_queries.sql_select_avg_rating).fetchall()
+

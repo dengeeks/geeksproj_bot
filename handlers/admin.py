@@ -157,11 +157,11 @@ async def answer_admin(message: types.Message,state: FSMContext):
     print("ANSWER", await state.get_state())
 
 async def start_fsm_rating(call: types.CallbackQuery,state: FSMContext):
+    await call.message.reply('Введите рейтинг 0 - 5')
     await bot.delete_message(chat_id=call.message.chat.id,
                              message_id=call.message.message_id)
     await AdminRating.rating.set()
-    await call.message.reply('Введите рейтинг 0 - 5')
-    print("RATING", await state.get_state())
+
 
 async def load_rating(message: types.Message,state: FSMContext):
     if isinstance(int(message.text),int) and 0<=int(message.text)<=5:
@@ -182,7 +182,6 @@ async def pass_admin_rate(call: types.CallbackQuery,state: FSMContext):
     await call.message.reply('Вы пропустили ответ!')
     await bot.delete_message(chat_id=call.message.chat.id,
                              message_id=call.message.message_id)
-    await state.finish()
 
 async def get_admin_rating(message: types.Message):
     await bot.delete_message(chat_id=message.chat.id,

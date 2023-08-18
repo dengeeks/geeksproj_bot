@@ -48,23 +48,27 @@ create_admin_table = '''CREATE TABLE IF NOT EXISTS admin_list
 
 create_report_users_table = '''CREATE TABLE IF NOT EXISTS user_complain
         (ID INTEGER PRIMARY KEY,
+        TELEGRAM_USERNAME_FIRST_COMPLAINED CHAR(50),
         TELEGRAM_ID_COMPLAINED_USER INTEGER,
         TELEGRAM_ID_BAD_USER INTEGER,
         REASON TEXT,
         REPORT_COUNT INTEGER
         )'''
 
+update_report_count = '''UPDATE user_complain SET REPORT_COUNT = REPORT_COUNT - 1 WHERE TELEGRAM_USERNAME_FIRST_COMPLAINED = (?) AND 
+                        TELEGRAM_ID_COMPLAINED_USER = (?) AND TELEGRAM_ID_BAD_USER = (?)'''
+
+select_username_who_reported = 'SELECT TELEGRAM_USERNAME_FIRST_COMPLAINED,TELEGRAM_ID_COMPLAINED_USER,TELEGRAM_ID_BAD_USER FROM user_complain WHERE TELEGRAM_USERNAME_FIRST_COMPLAINED = (?)'
 
 delete_reported_banned_users = '''DELETE FROM user_complain WHERE TELEGRAM_ID_BAD_USER = (?)'''
 
 select_report_count = '''SELECT REPORT_COUNT FROM user_complain WHERE TELEGRAM_ID_BAD_USER = (?)'''
 
-
 select_existing_bad_user = '''SELECT TELEGRAM_ID_BAD_USER FROM user_complain WHERE TELEGRAM_ID_BAD_USER = ?'''
 
 select_telegram_users_by_username = '''SELECT telegram_id FROM telegram_users WHERE Username = ?'''
 
-insert_user_complain = '''INSERT OR IGNORE INTO user_complain VALUES (?,?,?,?,?)'''
+insert_user_complain = '''INSERT OR IGNORE INTO user_complain VALUES (?,?,?,?,?,?)'''
 
 update_user_complain = '''UPDATE user_complain SET REPORT_COUNT = REPORT_COUNT + 1 WHERE TELEGRAM_ID_BAD_USER = (?)'''
 

@@ -104,6 +104,9 @@ async def get_all_poll_answers_id(message: types.Message):
     telegram = Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
+        await bot.delete_message(chat_id=message.chat.id,
+                                 message_id=message.message_id
+                                 )
         await AdminId.id.set()
         poll_id = Database().sql_select_all_poll_answers_id()
         id_list = []
@@ -154,6 +157,8 @@ async def answer_admin(message: types.Message,state: FSMContext):
     print("ANSWER", await state.get_state())
 
 async def start_fsm_rating(call: types.CallbackQuery,state: FSMContext):
+    await bot.delete_message(chat_id=call.message.chat.id,
+                             message_id=call.message.message_id)
     await AdminRating.rating.set()
     await call.message.reply('Введите рейтинг 0 - 5')
     print("RATING", await state.get_state())
@@ -175,9 +180,14 @@ async def load_rating(message: types.Message,state: FSMContext):
 
 async def pass_admin_rate(call: types.CallbackQuery,state: FSMContext):
     await call.message.reply('Вы пропустили ответ!')
+    await bot.delete_message(chat_id=call.message.chat.id,
+                             message_id=call.message.message_id)
     await state.finish()
 
 async def get_admin_rating(message: types.Message):
+    await bot.delete_message(chat_id=message.chat.id,
+                             message_id=message.message_id
+                             )
     telegram = Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
@@ -190,9 +200,12 @@ async def get_admin_rating(message: types.Message):
             for avg in avg_rate:
                 admin_rate_list.append(f'\nADMIN_ID: {avg["admin_tg_id"]} > AVG RATE: {avg["avg_rating"]}')
             admin_rate_list = "\n".join(admin_rate_list)
-            await message.reply(admin_rate_list)
+            await bot.send_message(chat_id=message.from_user.id,
+                                   text=admin_rate_list)
         else:
-            await message.reply('Еще никто не оценил админов!')
+            await bot.send_message(chat_id=message.from_user.id,
+                                   text='Еще никто не оценил админов!')
+
 
 def register_admin_handler(dp: Dispatcher):
     dp.register_message_handler(secret_word_admin, lambda word: 'admin' in word.text)

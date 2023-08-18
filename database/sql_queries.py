@@ -46,26 +46,62 @@ create_admin_table = '''CREATE TABLE IF NOT EXISTS admin_list
                     admin_telegram_id INTEGER UNIQUE
                     )'''
 
+create_report_users_table = '''CREATE TABLE IF NOT EXISTS user_complain
+        (ID INTEGER PRIMARY KEY,
+        TELEGRAM_ID_COMPLAINED_USER INTEGER,
+        TELEGRAM_ID_BAD_USER INTEGER,
+        REASON TEXT,
+        REPORT_COUNT INTEGER
+        )'''
+
+
+delete_reported_banned_users = '''DELETE FROM user_complain WHERE TELEGRAM_ID_BAD_USER = (?)'''
+
+select_report_count = '''SELECT REPORT_COUNT FROM user_complain WHERE TELEGRAM_ID_BAD_USER = (?)'''
+
+
+select_existing_bad_user = '''SELECT TELEGRAM_ID_BAD_USER FROM user_complain WHERE TELEGRAM_ID_BAD_USER = ?'''
+
+select_telegram_users_by_username = '''SELECT telegram_id FROM telegram_users WHERE Username = ?'''
+
+insert_user_complain = '''INSERT OR IGNORE INTO user_complain VALUES (?,?,?,?,?)'''
+
+update_user_complain = '''UPDATE user_complain SET REPORT_COUNT = REPORT_COUNT + 1 WHERE TELEGRAM_ID_BAD_USER = (?)'''
 
 select_users_info = '''SELECT name_of_user,age,bio,photo FROM user_info WHERE Telegram_id = ?'''
 
 insert_user_info = '''INSERT OR IGNORE INTO user_info VALUES (?,?,?,?,?,?)'''
 
-insert_ban_users_count = '''INSERT OR IGNORE INTO users_ban VALUES (?,?,?)'''
-insert_users = 'INSERT OR IGNORE INTO telegram_users VALUES (?,?,?,?,?)'
+insert_users_ban = '''INSERT OR IGNORE INTO users_ban VALUES (?,?,?)'''
+
+insert_telegram_users = 'INSERT OR IGNORE INTO telegram_users VALUES (?,?,?,?,?)'
+
 select_users_ban = '''SELECT Telegram_id FROM users_ban WHERE Telegram_id = (?)'''
-update_users_ban_count=('''UPDATE users_ban SET BanCount = BanCount + 1 WHERE Telegram_id = (?)''')
-select_users_counts = '''SELECT BanCount FROM users_ban WHERE Telegram_id = (?)'''
+
+update_users_ban=('''UPDATE users_ban SET BanCount = BanCount + 1 WHERE Telegram_id = (?)''')
+
+select_BanCount = '''SELECT BanCount FROM users_ban WHERE Telegram_id = (?)'''
+
 delete_banned_users = '''DELETE FROM users_ban WHERE Telegram_id = (?)'''
+
 select_users_for_admin = '''SELECT Telegram_id,Username,Firstname FROM telegram_users'''
+
 select_potential_ban_users = '''SELECT telegram_users.Telegram_id,telegram_users.Username, telegram_users.Firstname,users_ban.BanCount FROM telegram_users 
                             JOIN users_ban ON telegram_users.Telegram_id = users_ban.Telegram_id'''
-select_all_users = '''SELECT Telegram_id FROM telegram_users'''
-insert_poll_answers = '''INSERT OR IGNORE INTO poll VALUES(?,?,?,?)'''
+
+select_telegram_id_from_tg_users = '''SELECT Telegram_id FROM telegram_users'''
+
+insert_poll = '''INSERT OR IGNORE INTO poll VALUES(?,?,?,?)'''
+
 select_poll_answers_by_id = '''SELECT id,idea,problems,telegram_id FROM poll WHERE id = (?)'''
+
 sql_select_all_poll_answers_id = '''SELECT id FROM poll'''
+
 insert_into_adminrating = '''INSERT OR IGNORE INTO admin_rating VALUES(?,?,?,?)'''
+
 select_admins_rating = '''SELECT admin_telegram_id,rating FROM admin_rating'''
+
 select_admin_list = '''SELECT admin_telegram_id FROM admin_list'''
+
 sql_select_avg_rating = '''SELECT admin_telegram_id,AVG(rating) FROM admin_rating GROUP BY admin_telegram_id'''
 

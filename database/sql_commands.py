@@ -17,6 +17,7 @@ class Database:
         self.connection.execute(sql_queries.create_admin_rating_table)
         self.connection.execute(sql_queries.create_admin_table)
         self.connection.execute(sql_queries.create_report_users_table)
+        self.connection.execute(sql_queries.create_already_friend)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
@@ -186,4 +187,43 @@ class Database:
     def sql_update_report_count(self, username_who_reported, telegram_id_complained_user, telegram_id_bad_user):
         self.cursor.execute(sql_queries.update_report_count,
                             (username_who_reported, telegram_id_complained_user, telegram_id_bad_user))
+        self.connection.commit()
+
+    def sql_select_tg_user_by_firstname(self, firstname):
+        self.cursor.row_factory = lambda cursor, row: {
+            "telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_telegram_users_by_firstname, (firstname,)).fetchall()
+
+    def sql_select_all_user_complain(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            "ID" : row[0],
+            "who_complained": row[1],
+            "tg_id_complained_user": row[2],
+            "tg_id_bad_user": row[3],
+            "reason": row[4],
+            "count": row[5]
+        }
+        return self.cursor.execute(sql_queries.select_all_user_complain).fetchall()
+
+    def sql_insert_already_friend(self,owner_id,friended_tg_id):
+        self.cursor.execute(sql_queries.sql_insert_already_friend,
+                            (owner_id, friended_tg_id)
+                            )
+        self.connection.commit()
+
+    def sql_select_already_friend(self,owner_id,friended_tg_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "owner_id": row[0],
+            "friended_tg_id": row[1],
+        }
+        return self.cursor.execute(sql_queries.sql_select_already_friend,(owner_id,friended_tg_id)).fetchall()
+
+    def update_report_count_by_friend(self,ID):
+        self.cursor.execute(sql_queries.update_report_count_by_friend,
+                            (ID,))
+        self.connection.commit()
+
+    def delete_user_complain(self):
+        self.cursor.execute(sql_queries.delete_user_complain)
         self.connection.commit()

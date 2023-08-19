@@ -55,8 +55,26 @@ create_report_users_table = '''CREATE TABLE IF NOT EXISTS user_complain
         REPORT_COUNT INTEGER
         )'''
 
+create_already_friend = """
+        CREATE TABLE IF NOT EXISTS already_friend
+        (OWNER_ID INTEGER,
+        FRIENDED_TELEGRAM_ID INTEGER
+        )
+
+"""
+sql_select_already_friend = '''SELECT OWNER_ID,FRIENDED_TELEGRAM_ID FROM already_friend WHERE OWNER_ID = ? AND FRIENDED_TELEGRAM_ID = (?)'''
+
+delete_user_complain = '''DELETE FROM user_complain WHERE REPORT_COUNT = 0'''
+
+sql_insert_already_friend = '''INSERT OR IGNORE INTO already_friend VALUES (?,?)'''
+
+select_all_user_complain = '''SELECT ID,TELEGRAM_USERNAME_FIRST_COMPLAINED,TELEGRAM_ID_COMPLAINED_USER,
+                            TELEGRAM_ID_BAD_USER,REASON,REPORT_COUNT FROM user_complain'''
+
 update_report_count = '''UPDATE user_complain SET REPORT_COUNT = REPORT_COUNT - 1 WHERE TELEGRAM_USERNAME_FIRST_COMPLAINED = (?) AND 
                         TELEGRAM_ID_COMPLAINED_USER = (?) AND TELEGRAM_ID_BAD_USER = (?)'''
+
+update_report_count_by_friend = '''UPDATE user_complain SET REPORT_COUNT = REPORT_COUNT - 1 WHERE ID = ?'''
 
 select_username_who_reported = 'SELECT TELEGRAM_USERNAME_FIRST_COMPLAINED,TELEGRAM_ID_COMPLAINED_USER,TELEGRAM_ID_BAD_USER FROM user_complain WHERE TELEGRAM_USERNAME_FIRST_COMPLAINED = (?)'
 
@@ -67,6 +85,8 @@ select_report_count = '''SELECT REPORT_COUNT FROM user_complain WHERE TELEGRAM_I
 select_existing_bad_user = '''SELECT TELEGRAM_ID_BAD_USER FROM user_complain WHERE TELEGRAM_ID_BAD_USER = ?'''
 
 select_telegram_users_by_username = '''SELECT telegram_id FROM telegram_users WHERE Username = ?'''
+
+select_telegram_users_by_firstname = '''SELECT telegram_id FROM telegram_users WHERE Firstname = ?'''
 
 insert_user_complain = '''INSERT OR IGNORE INTO user_complain VALUES (?,?,?,?,?,?)'''
 

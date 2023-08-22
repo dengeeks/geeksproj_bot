@@ -77,6 +77,25 @@ create_balance_user_reference = '''CREATE TABLE IF NOT EXISTS balance
                                 balance INTEGER
                                 )
 '''
+
+create_transactions_table = '''CREATE TABLE IF NOT EXISTS transactions
+                            (ID INTEGER PRIMARY KEY,
+                            Sender_id INTEGER,
+                            Recipient_id INTEGER,
+                            Amount INTEGER
+                            )'''
+
+sql_select_users_balance_by_user_firsname = '''SELECT telegram_id FROM balance WHERE telegram_id IN (
+                                            SELECT telegram_id FROM telegram_users
+                                            WHERE Username = ? OR firstname = ?
+                                            )'''
+
+sql_select_into_transactions = '''INSERT OR IGNORE INTO transactions VALUES(?,?,?,?)'''
+
+sql_update_sender_balance = '''UPDATE balance SET balance = balance - (?) WHERE telegram_id = ?'''
+
+sql_update_balance_recipient_balance = '''UPDATE balance SET balance = balance + (?) WHERE telegram_id = ?'''
+
 sql_select_my_balance_by_id = '''SELECT balance FROM balance WHERE telegram_id = ?'''
 
 select_existing_balance = '''SELECT telegram_id FROM balance WHERE telegram_id = ?'''

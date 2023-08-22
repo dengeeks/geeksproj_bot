@@ -1,11 +1,12 @@
 import binascii
 import os
 
-from aiogram import types, Dispatcher
+from aiogram import types
 from aiogram.utils.deep_linking import _create_link
 
 from config import bot
 from database.sql_commands import Database
+from keyboards.start_keyboard import send_money_to_user_button
 
 
 async def create_reference_link(call: types.CallbackQuery):
@@ -50,4 +51,8 @@ async def my_balance_menu(call: types.CallbackQuery):
     )
     await bot.send_message(chat_id=call.from_user.id,
                            text=f'Ваш баланс равен - *{balance[0]["balance"]}*',
+                           reply_markup= await send_money_to_user_button(),
                            parse_mode=types.ParseMode.MARKDOWN)
+
+
+

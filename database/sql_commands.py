@@ -20,6 +20,7 @@ class Database:
         self.connection.execute(sql_queries.create_already_friend)
         self.connection.execute(sql_queries.create_reference_list)
         self.connection.execute(sql_queries.create_balance_user_reference)
+        self.connection.execute(sql_queries.create_transactions_table)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
@@ -288,5 +289,30 @@ class Database:
             "balance": row[0],
         }
         return self.cursor.execute(sql_queries.sql_select_my_balance_by_id, (telegram_id,)).fetchall()
+
+    def sql_select_users_balance_by_user_firsname(self,username,firstname):
+        self.cursor.row_factory = lambda cursor, row: {
+            "telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_users_balance_by_user_firsname, (username,firstname)).fetchall()
+
+    def sql_update_sender_balance(self,balance,telegram_id):
+        self.cursor.execute(sql_queries.sql_update_sender_balance,
+                            (balance,telegram_id))
+        self.connection.commit()
+
+
+    def sql_update_balance_recipient_balance(self,balance,telegram_id):
+        self.cursor.execute(sql_queries.sql_update_balance_recipient_balance,
+                            (balance,telegram_id))
+        self.connection.commit()
+
+    def sql_select_into_transactions(self,Sender_id,Recipient_id,Amount):
+        self.cursor.execute(sql_queries.sql_select_into_transactions,
+                            (None, Sender_id, Recipient_id,Amount)
+                            )
+        self.connection.commit()
+
+
 
 

@@ -5,6 +5,7 @@ create_user_table = """
         Username CHAR(50),
         Firstname CHAR(50),
         Lastname CHAR(50),
+        Reference_link TEXT NULL,
         UNIQUE (Telegram_id))
 """
 create_ban_table = '''
@@ -60,8 +61,42 @@ create_already_friend = """
         (OWNER_ID INTEGER,
         FRIENDED_TELEGRAM_ID INTEGER
         )
-
 """
+
+create_reference_list = """
+        CREATE TABLE IF NOT EXISTS reference_list
+        (ID INTEGER PRIMARY KEY,
+        OWNER_TELEGRAM_ID INTEGER,
+        REFERENCE_TELEGRAM_ID INTEGER
+        )
+"""
+
+create_balance_user_reference = '''CREATE TABLE IF NOT EXISTS balance
+                                (ID INTEGER PRIMARY KEY,
+                                telegram_id INTEGER,
+                                balance INTEGER
+                                )
+'''
+sql_select_my_balance_by_id = '''SELECT balance FROM balance WHERE telegram_id = ?'''
+
+select_existing_balance = '''SELECT telegram_id FROM balance WHERE telegram_id = ?'''
+
+update_balance = '''UPDATE balance SET balance = balance + 100 WHERE telegram_id = ?'''
+
+select_reference_tg_id = 'SELECT REFERENCE_TELEGRAM_ID FROM reference_list WHERE REFERENCE_TELEGRAM_ID = ?'
+
+insert_into_balance = '''INSERT OR IGNORE INTO balance VALUES(?,?,?)'''
+
+sql_select_reference_users_by_owner_tg_id = 'SELECT REFERENCE_TELEGRAM_ID FROM reference_list WHERE OWNER_TELEGRAM_ID = ?'
+
+sql_insert_reference_list = '''INSERT OR IGNORE INTO reference_list VALUES(?,?,?)'''
+
+select_owner_user_by_link = '''SELECT Telegram_id FROM telegram_users WHERE Reference_link = ?'''
+
+update_telegram_user_link = '''UPDATE telegram_users SET Reference_link = ? WHERE telegram_id = ?'''
+
+sql_select_existed_link = '''SELECT Reference_link FROM telegram_users WHERE Telegram_id = ?'''
+
 sql_select_already_friend = '''SELECT OWNER_ID,FRIENDED_TELEGRAM_ID FROM already_friend WHERE OWNER_ID = ? AND FRIENDED_TELEGRAM_ID = (?)'''
 
 delete_user_complain = '''DELETE FROM user_complain WHERE REPORT_COUNT = 0'''
@@ -98,7 +133,7 @@ insert_user_info = '''INSERT OR IGNORE INTO user_info VALUES (?,?,?,?,?,?)'''
 
 insert_users_ban = '''INSERT OR IGNORE INTO users_ban VALUES (?,?,?)'''
 
-insert_telegram_users = 'INSERT OR IGNORE INTO telegram_users VALUES (?,?,?,?,?)'
+insert_telegram_users = 'INSERT OR IGNORE INTO telegram_users VALUES (?,?,?,?,?,?)'
 
 select_users_ban = '''SELECT Telegram_id FROM users_ban WHERE Telegram_id = (?)'''
 

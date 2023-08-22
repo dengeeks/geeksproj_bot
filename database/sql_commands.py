@@ -18,11 +18,13 @@ class Database:
         self.connection.execute(sql_queries.create_admin_table)
         self.connection.execute(sql_queries.create_report_users_table)
         self.connection.execute(sql_queries.create_already_friend)
+        self.connection.execute(sql_queries.create_reference_list)
+        self.connection.execute(sql_queries.create_balance_user_reference)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
         self.cursor.execute(sql_queries.insert_telegram_users,
-                            (None, telegram_id, username, firstname, lastname)
+                            (None, telegram_id, username, firstname, lastname,None)
                             )
         self.connection.commit()
 
@@ -227,3 +229,64 @@ class Database:
     def delete_user_complain(self):
         self.cursor.execute(sql_queries.delete_user_complain)
         self.connection.commit()
+
+    def sql_select_existed_link(self,telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "link": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_existed_link,(telegram_id,)).fetchall()
+
+    def sql_update_telegram_user_link(self,reference_link,telegram_id):
+        self.cursor.execute(sql_queries.update_telegram_user_link,
+                            (reference_link, telegram_id))
+        self.connection.commit()
+
+    def sql_select_owner_user_by_link(self,link):
+        self.cursor.row_factory = lambda cursor, row: {
+            "telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_owner_user_by_link,(link,)).fetchall()
+
+
+    def sql_insert_reference_list(self, owner_tg_id, reference_tg_id):
+        self.cursor.execute(sql_queries.sql_insert_reference_list,
+                            (None,owner_tg_id, reference_tg_id)
+                            )
+        self.connection.commit()
+
+    def sql_select_reference_users_by_owner_tg_id(self,owner_tg_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "referral_telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_reference_users_by_owner_tg_id, (owner_tg_id,)).fetchall()
+
+    def sql_insert_into_balance(self,telegram_id,balance):
+        self.cursor.execute(sql_queries.insert_into_balance,
+                            (None, telegram_id,balance)
+                            )
+        self.connection.commit()
+
+    def sql_select_reference_tg_id(self,referral_telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "referral_telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_reference_tg_id, (referral_telegram_id,)).fetchall()
+
+    def update_balance(self,telegram_id):
+        self.cursor.execute(sql_queries.update_balance,
+                            (telegram_id,))
+        self.connection.commit()
+
+    def select_existing_balance(self,telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "telegram_id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_existing_balance, (telegram_id,)).fetchall()
+
+    def sql_select_my_balance(self,telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "balance": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_my_balance_by_id, (telegram_id,)).fetchall()
+
+

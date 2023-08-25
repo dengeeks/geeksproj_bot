@@ -11,8 +11,10 @@ from handlers.friend_unfriend import (
     unfriend_call
 )
 from handlers.reference import create_reference_link, reference_list_menu, my_balance_menu
-from keyboards.start_keyboard import start_menu_button
+from keyboards.start_keyboard import start_menu_button, save_news_button
 from aiogram.utils.deep_linking import _create_link
+
+from scraping.news_kg import NewsScraper
 
 
 async def start(message: types.Message):
@@ -63,6 +65,35 @@ async def start(message: types.Message):
                                                    balance=100)
 
 
+async def last_news_call(call: types.CallbackQuery):
+    scraper = NewsScraper()
+    urls = scraper.parse_data()
+    for url in urls:
+        Database().sql_insert_news(
+            news=url
+        )
+        news_id = Database().sql_select_news_id_by_link(
+            news=url
+        )
+        await bot.send_message(chat_id=call.from_user.id,
+                               text=url,
+                               reply_markup=await save_news_button(
+                                   id=news_id[0]['id']
+                               ))
+
+async def save_news_call(call: types.CallbackQuery):
+    await bot.delete_message(
+        chat_id=call.from_user.id,
+        message_id=call.message.message_id
+    )
+    news_id = re.sub('save_news_','',call.data)
+    favorite_news_link = Database().sql_select_news_link_by_id(
+        id=news_id
+    )
+    Database().sql_insert_favorite_news(
+        telegram_id=call.from_user.id,
+        favorite_news=favorite_news_link[0]['news']
+    )
 
 def register_start_handlers(dp: Dispatcher):
     dp.register_message_handler(start, commands=['start'])
@@ -75,4 +106,5 @@ def register_start_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(start_fsm_send_money, lambda call: call.data == 'money')
     dp.register_message_handler(load_name, content_types=['text'], state=SendMoney.name_user)
     dp.register_message_handler(load_amount, content_types=['text'], state=SendMoney.amount)
-
+    dp.register_callback_query_handler(last_news_call, lambda call: call.data == 'last_news')
+    dp.register_callback_query_handler(save_news_call, lambda call: call.data.startswith('save_news_'))

@@ -21,6 +21,8 @@ class Database:
         self.connection.execute(sql_queries.create_reference_list)
         self.connection.execute(sql_queries.create_balance_user_reference)
         self.connection.execute(sql_queries.create_transactions_table)
+        self.connection.execute(sql_queries.create_news_table)
+        self.connection.execute(sql_queries.create_favorite_news_table)
         self.connection.commit()
 
     def insert_table(self, telegram_id, username, firstname, lastname):
@@ -312,6 +314,34 @@ class Database:
                             (None, Sender_id, Recipient_id,Amount)
                             )
         self.connection.commit()
+
+
+    def sql_insert_news(self,news):
+        self.cursor.execute(sql_queries.sql_insert_news_table,
+                            (None,news)
+                            )
+        self.connection.commit()
+
+
+    def sql_insert_favorite_news(self,telegram_id,favorite_news):
+        self.cursor.execute(sql_queries.sql_insert_favorite_news_table,
+                            (None, telegram_id,favorite_news)
+                            )
+        self.connection.commit()
+
+    def sql_select_news_id_by_link(self,news):
+        self.cursor.row_factory = lambda cursor, row: {
+            "id": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_news_id_by_link,
+                                   (news,)).fetchall()
+
+    def sql_select_news_link_by_id(self,id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "news": row[0],
+        }
+        return self.cursor.execute(sql_queries.sql_select_news_link_by_id,
+                                   (id,)).fetchall()
 
 
 

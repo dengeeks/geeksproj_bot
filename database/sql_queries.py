@@ -85,10 +85,30 @@ create_transactions_table = '''CREATE TABLE IF NOT EXISTS transactions
                             Amount INTEGER
                             )'''
 
+create_news_table = '''CREATE TABLE IF NOT EXISTS news
+                            (ID INTEGER PRIMARY KEY,
+                            News TEXT
+                            )'''
+
+create_favorite_news_table = '''CREATE TABLE IF NOT EXISTS favorite_news
+                            (ID INTEGER PRIMARY KEY,
+                            telegram_id_who_saved INTEGER,
+                            Favorite_News TEXT
+                            )'''
+
+sql_insert_news_table = '''INSERT OR IGNORE INTO news VALUES(?,?)'''
+
+sql_insert_favorite_news_table = '''INSERT OR IGNORE INTO favorite_news VALUES(?,?,?)'''
+
+sql_select_news_id_by_link = '''SELECT ID FROM news WHERE News = ?'''
+
+sql_select_news_link_by_id = '''SELECT news FROM news WHERE ID = ?'''
+
 sql_select_users_balance_by_user_firsname = '''SELECT telegram_id FROM balance WHERE telegram_id IN (
                                             SELECT telegram_id FROM telegram_users
                                             WHERE Username = ? OR firstname = ?
                                             )'''
+
 
 sql_select_into_transactions = '''INSERT OR IGNORE INTO transactions VALUES(?,?,?,?)'''
 

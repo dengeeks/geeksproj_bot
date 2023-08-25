@@ -21,7 +21,9 @@ async def start_menu_button():
                                          callback_data='list_referral')
     my_balance_button = InlineKeyboardButton('Мой баланс💵',
                                              callback_data='my_balance')
-    markup.add(play_game, create_link, list_referral, my_balance_button)
+    last_news = InlineKeyboardButton('Последние новости Кыргызстана📰',
+                                     callback_data='last_news')
+    markup.add(play_game, create_link, list_referral, my_balance_button,last_news)
     return markup
 
 
@@ -33,3 +35,9 @@ async def send_money_to_user_button():
     markup.row(send_money)
     return markup
 
+async def save_news_button(id):
+    markup = InlineKeyboardMarkup()
+    save_news = InlineKeyboardButton('Сохранить новости🗞️',
+                                      callback_data=f'save_news_{id}')
+    markup.row(save_news)
+    return markup

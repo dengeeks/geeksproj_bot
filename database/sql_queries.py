@@ -96,6 +96,12 @@ create_favorite_news_table = '''CREATE TABLE IF NOT EXISTS favorite_news
                             Favorite_News TEXT
                             )'''
 
+delete_from_favorite_news = '''DELETE FROM favorite_news WHERE ID = ?'''
+
+select_my_favorite_news_id_by_link = '''SELECT ID FROM favorite_news WHERE Favorite_News = ?'''
+
+select_favorite_news_by_own_id = '''SELECT Favorite_News FROM favorite_news WHERE telegram_id_who_saved = ?'''
+
 sql_insert_news_table = '''INSERT OR IGNORE INTO news VALUES(?,?)'''
 
 sql_insert_favorite_news_table = '''INSERT OR IGNORE INTO favorite_news VALUES(?,?,?)'''

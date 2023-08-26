@@ -344,5 +344,28 @@ class Database:
                                    (id,)).fetchall()
 
 
+    def sql_select_favorite_news_by_own_id(self,telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "favorite_news": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_favorite_news_by_own_id,
+                                   (telegram_id,)).fetchall()
+
+
+    def sql_select_my_favorite_news_id_by_link(self,link):
+        self.cursor.row_factory = lambda cursor, row: {
+            "id": row[0],
+        }
+        return self.cursor.execute(sql_queries.select_my_favorite_news_id_by_link,
+                                   (link,)).fetchall()
+
+
+    def sql_delete_from_favorite_news(self,id):
+        self.cursor.execute(sql_queries.delete_from_favorite_news,
+                            (id,)
+                            )
+        self.connection.commit()
+
+
 
 

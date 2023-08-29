@@ -10,13 +10,13 @@ from keyboards.start_keyboard import send_money_to_user_button
 
 
 async def create_reference_link(call: types.CallbackQuery):
-    existed = Database().sql_select_existed_link(
+    existed = await Database().sql_select_existed_link(
         telegram_id=call.from_user.id
     )
     if existed[0]['link'] is None:
         token = binascii.hexlify(os.urandom(4)).decode()
         link = await _create_link(link_type='start',payload=token)
-        Database().sql_update_telegram_user_link(reference_link=link,
+        await Database().sql_update_telegram_user_link(reference_link=link,
                                                  telegram_id=call.from_user.id)
         await bot.send_message(
             chat_id=call.from_user.id,
@@ -33,7 +33,7 @@ async def create_reference_link(call: types.CallbackQuery):
         )
 
 async def reference_list_menu(call: types.CallbackQuery):
-    referrals = Database().sql_select_reference_users_by_owner_tg_id(
+    referrals = await Database().sql_select_reference_users_by_owner_tg_id(
         owner_tg_id=call.from_user.id
     )
     referral_list = ['Список ваших рефералов🔗\n']
@@ -46,7 +46,7 @@ async def reference_list_menu(call: types.CallbackQuery):
                                parse_mode=types.ParseMode.MARKDOWN)
 
 async def my_balance_menu(call: types.CallbackQuery):
-    balance = Database().sql_select_my_balance(
+    balance = await Database().sql_select_my_balance(
         telegram_id=call.from_user.id
     )
     await bot.send_message(chat_id=call.from_user.id,

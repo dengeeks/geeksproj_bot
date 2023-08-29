@@ -13,14 +13,14 @@ async def ban_on_words(message: types.Message):
                     chat_id=message.chat.id,
                     message_id=message.message_id
                 )
-                existing= Database().select_users_ban(telegram_id= message.from_user.id)
+                existing= await Database().select_users_ban(telegram_id= message.from_user.id)
                 if existing:
-                    Database().update_ban_users_count(telegram_id=message.from_user.id)
+                    await Database().update_ban_users_count(telegram_id=message.from_user.id)
                 else:
-                    Database().insert_ban_users_count(
+                    await Database().insert_ban_users_count(
                         telegram_id=message.from_user.id,
                         bancount=1)
-                counts = Database().select_users_counts(telegram_id=message.from_user.id)
+                counts = await Database().select_users_counts(telegram_id=message.from_user.id)
                 await bot.send_message(chat_id=message.chat.id,
                                        text=f'Ваше {counts[0]} предупреждение'
                                        )
@@ -34,7 +34,7 @@ async def ban_on_words(message: types.Message):
                     await bot.send_message(chat_id=message.chat.id,
                                      text=f"Пользователь {message.from_user.username}"
                                           f"\nбыл забанен на {ban_time}")
-                    Database().delete_banned_users(
+                    await Database().delete_banned_users(
                         telegram_id=message.from_user.id
                     )
 

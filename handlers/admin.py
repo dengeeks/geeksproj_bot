@@ -5,7 +5,7 @@ from database.sql_commands import Database
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from config import AdminAnswer,AdminRating,AdminId
 async def secret_word_admin(message: types.Message):
-    telegram = Database().sql_select_admin_list()
+    telegram = await Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
         await bot.delete_message(chat_id=message.chat.id,
@@ -30,7 +30,7 @@ async def admin_users_list_button():
 
 
 async def admin_users_list(call: types.CallbackQuery):
-    users = Database().select_users_for_admin()
+    users = await Database().select_users_for_admin()
     list_of_users = []
     for user in users:
         if not user['username']:
@@ -54,7 +54,7 @@ async def send_message_to_users_button():
 
 
 async def admin_potential_ban_users(call: types.CallbackQuery):
-    potential_bans = Database().select_potential_ban_users()
+    potential_bans = await Database().select_potential_ban_users()
     list_of_potential_ban = []
     if potential_bans:
         for potential_ban in potential_bans:
@@ -74,9 +74,9 @@ async def admin_potential_ban_users(call: types.CallbackQuery):
 
 
 async def send_message_to_users(call: types.CallbackQuery):
-    warning = Database().select_all_users()
+    warning = await Database().select_all_users()
     for warn in warning:
-        ban_count = Database().select_users_counts(telegram_id=warn['telegram_id'])
+        ban_count = await Database().select_users_counts(telegram_id=warn['telegram_id'])
         await call.bot.send_message(chat_id=warn['telegram_id'],
                                     text=f'У вас {ban_count[0]} предупреждений')
 
@@ -101,14 +101,14 @@ async def rating_button():
     return markup
 
 async def get_all_poll_answers_id(message: types.Message):
-    telegram = Database().sql_select_admin_list()
+    telegram = await Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
         await bot.delete_message(chat_id=message.chat.id,
                                  message_id=message.message_id
                                  )
         await AdminId.id.set()
-        poll_id = Database().sql_select_all_poll_answers_id()
+        poll_id = await Database().sql_select_all_poll_answers_id()
         id_list = []
         for id in poll_id:
             id_list.append(f"POLL ID: {id['id']}")
@@ -124,7 +124,7 @@ async def load_id(message: types.Message, state: FSMContext):
     if isinstance(int(message.text), int):
         async with state.proxy() as data:
             data['id'] = message.text
-            poll_answers = Database().sql_select_poll_answers_by_id(id=data['id'])
+            poll_answers = await Database().sql_select_poll_answers_by_id(id=data['id'])
             await message.reply(
                 text=f"ID: {poll_answers[0]['id']}"
                      f"\nIDEA: {poll_answers[0]['idea']}"
@@ -146,7 +146,7 @@ async def answer_button_handler(call: types.CallbackQuery):
 async def answer_admin(message: types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['answer'] = message.text
-        telegram_id= Database().sql_select_poll_answers_by_id(data['id'])
+        telegram_id= await Database().sql_select_poll_answers_by_id(data['id'])
     await bot.send_message(chat_id=telegram_id[0]['telegram_id'],
                            text=data['answer'],
                            )
@@ -167,7 +167,7 @@ async def load_rating(message: types.Message,state: FSMContext):
     if isinstance(int(message.text),int) and 0<=int(message.text)<=5:
         async with state.proxy() as data:
             data['rating'] = int(message.text)
-            Database().sql_insert_into_adminrate(admin_telegram_id=664999418,
+            await Database().sql_insert_into_adminrate(admin_telegram_id=664999418,
                                                 telegram_id=message.from_user.id,
                                                 rating=data['rating'])
             print("Current state:", await state.get_state())
@@ -187,15 +187,15 @@ async def get_admin_rating(message: types.Message):
     await bot.delete_message(chat_id=message.chat.id,
                              message_id=message.message_id
                              )
-    telegram = Database().sql_select_admin_list()
+    telegram = await Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
-        admins = Database().sql_select_admins_rating()
+        admins = await Database().sql_select_admins_rating()
         if admins:
             admin_rate_list = []
             for admin in admins:
                 admin_rate_list.append(f'ADMIN_ID: {admin["admin_tg_id"]} > RATING: {admin["rating"]}')
-            avg_rate = Database().sql_avg_rating()
+            avg_rate = await Database().sql_avg_rating()
             for avg in avg_rate:
                 admin_rate_list.append(f'\nADMIN_ID: {avg["admin_tg_id"]} > AVG RATE: {avg["avg_rating"]}')
             admin_rate_list = "\n".join(admin_rate_list)

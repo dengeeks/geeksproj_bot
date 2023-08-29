@@ -1,6 +1,6 @@
 from aiogram.utils import executor
 from config import dp
-from handlers import start,chat_actions,admin,signup,poll,report,Transactions
+from handlers import start, chat_actions, admin, signup, poll, report, Transactions, cars
 from database.sql_commands import Database
 
 
@@ -12,6 +12,7 @@ async def on_start_up(_):
 
 start.register_start_handlers(dp=dp)
 admin.register_admin_handler(dp=dp)
+cars.register_cars_handlers(dp=dp)
 report.register_report_handler(dp=dp)
 signup.register_signup_handlers(dp=dp)
 poll.register_poll_handlers(dp=dp)

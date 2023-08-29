@@ -18,7 +18,7 @@ from scraping.news_kg import NewsScraper
 
 
 async def start(message: types.Message):
-    telegram = Database().sql_select_admin_list()
+    telegram = await Database().sql_select_admin_list()
     token = message.get_full_command()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
@@ -29,6 +29,12 @@ async def start(message: types.Message):
                 caption=START_MENU_FOR_ADMIN,
                 reply_markup=await start_menu_button()
             )
+            await Database().insert_table(
+                telegram_id=message.from_user.id,
+                username=message.from_user.username,
+                firstname=message.from_user.first_name,
+                lastname=message.from_user.last_name,
+            )
     else:
         with open(r"C:\Users\denis\PycharmProjects\hw1_month3\media\images.png", "rb") as photo:
             await bot.send_photo(
@@ -37,31 +43,37 @@ async def start(message: types.Message):
                 caption=START_MENU_TEXT,
                 reply_markup=await start_menu_button()
             )
-    if token[1]:
-        link = await _create_link(link_type='start', payload=token[1])
-        telegram_id = Database().sql_select_owner_user_by_link(
-            link=link
-        )
-        existed_reference = Database().sql_select_reference_tg_id(referral_telegram_id=message.from_user.id)
-        if existed_reference:
-            await bot.send_message(chat_id=message.from_user.id,
-                                   text='Вы уже есть в списке рефералов!')
-        else:
-            Database().sql_insert_reference_list(
-                owner_tg_id=telegram_id[0]['telegram_id'],
-                reference_tg_id=message.from_user.id
-            )
-            Database().insert_table(
+            await Database().insert_table(
                 telegram_id=message.from_user.id,
                 username=message.from_user.username,
                 firstname=message.from_user.first_name,
                 lastname=message.from_user.last_name,
             )
-            existed_balance = Database().select_existing_balance(telegram_id=telegram_id[0]['telegram_id'])
+    if token[1]:
+        link = await _create_link(link_type='start', payload=token[1])
+        telegram_id = await Database().sql_select_owner_user_by_link(
+            link=link
+        )
+        existed_reference = await Database().sql_select_reference_tg_id(referral_telegram_id=message.from_user.id)
+        if existed_reference:
+            await bot.send_message(chat_id=message.from_user.id,
+                                   text='Вы уже есть в списке рефералов!')
+        else:
+            await Database().sql_insert_reference_list(
+                owner_tg_id=telegram_id[0]['telegram_id'],
+                reference_tg_id=message.from_user.id
+            )
+            await Database().insert_table(
+                telegram_id=message.from_user.id,
+                username=message.from_user.username,
+                firstname=message.from_user.first_name,
+                lastname=message.from_user.last_name,
+            )
+            existed_balance = await Database().select_existing_balance(telegram_id=telegram_id[0]['telegram_id'])
             if existed_balance:
-                Database().update_balance(telegram_id=telegram_id[0]['telegram_id'])
+                await Database().update_balance(telegram_id=telegram_id[0]['telegram_id'])
             else:
-                Database().sql_insert_into_balance(telegram_id=telegram_id[0]['telegram_id'],
+                await Database().sql_insert_into_balance(telegram_id=telegram_id[0]['telegram_id'],
                                                    balance=100)
 
 
@@ -69,10 +81,10 @@ async def last_news_call(call: types.CallbackQuery):
     scraper = NewsScraper()
     urls = scraper.parse_data()
     for url in urls:
-        Database().sql_insert_news(
+        await Database().sql_insert_news(
             news=url
         )
-        news_id = Database().sql_select_news_id_by_link(
+        news_id = await Database().sql_select_news_id_by_link(
             news=url
         )
         await bot.send_message(chat_id=call.from_user.id,
@@ -87,20 +99,20 @@ async def save_news_call(call: types.CallbackQuery):
         message_id=call.message.message_id
     )
     news_id = re.sub('save_news_','',call.data)
-    favorite_news_link = Database().sql_select_news_link_by_id(
+    favorite_news_link = await Database().sql_select_news_link_by_id(
         id=news_id
     )
-    Database().sql_insert_favorite_news(
+    await Database().sql_insert_favorite_news(
         telegram_id=call.from_user.id,
         favorite_news=favorite_news_link[0]['news']
     )
 
 async def my_news_call(call: types.CallbackQuery):
-    my_news = Database().sql_select_favorite_news_by_own_id(
+    my_news = await Database().sql_select_favorite_news_by_own_id(
         telegram_id=call.from_user.id
     )
     for my_new in my_news:
-        id_links = Database().sql_select_my_favorite_news_id_by_link(
+        id_links = await Database().sql_select_my_favorite_news_id_by_link(
             link=my_new['favorite_news']
         )
         await bot.send_message(
@@ -113,7 +125,7 @@ async def my_news_call(call: types.CallbackQuery):
 
 async def delete_favorite_news_call(call: types.CallbackQuery):
     news_id = re.sub('deletefavorite_news_', '', call.data)
-    Database().sql_delete_from_favorite_news(
+    await Database().sql_delete_from_favorite_news(
         id=int(news_id)
     )
     await bot.delete_message(

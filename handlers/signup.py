@@ -42,7 +42,7 @@ async def load_photo(message: types.Message, state: FSMContext):
     print(f'message.photo: {path.name}')
     async with state.proxy() as data:
         data['photo'] = message.photo
-        Database().sql_insert_user_info(telegram_id=message.from_user.id,
+        await Database().sql_insert_user_info(telegram_id=message.from_user.id,
                                         name_of_user=data['name'],
                                         age=data['age'],
                                         bio=data['bio'],
@@ -61,7 +61,7 @@ async def profile_button():
 
 
 async def get_profile(call: types.CallbackQuery):
-    user_info = Database().sql_select_user_info(telegram_id=call.from_user.id)
+    user_info = await Database().sql_select_user_info(telegram_id=call.from_user.id)
     with open(user_info[0]['photo'], 'rb') as photo:
         await bot.send_photo(chat_id=call.message.chat.id,
                              photo=photo,

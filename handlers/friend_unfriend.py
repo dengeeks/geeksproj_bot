@@ -7,7 +7,7 @@ import random
 
 
 async def random_user_complain(call: types.CallbackQuery):
-    users_complain_list = Database().sql_select_all_user_complain()
+    users_complain_list = await Database().sql_select_all_user_complain()
     random_user_form = random.choice(users_complain_list)
     await bot.send_message(chat_id=call.message.chat.id,
                            text=f'*ID*: {random_user_form["ID"]}\n'
@@ -30,7 +30,7 @@ async def unfriend_call(call: types.CallbackQuery):
 
 async def friend_call(call: types.CallbackQuery):
     owner_id = re.sub("friend_button_", "", call.data)
-    friended_form = Database().sql_select_already_friend(
+    friended_form = await Database().sql_select_already_friend(
         owner_id=owner_id,
         friended_tg_id=call.from_user.id
     )
@@ -43,12 +43,12 @@ async def friend_call(call: types.CallbackQuery):
                                  message_id=call.message.message_id)
         await random_user_complain(call=call)
     else:
-        Database().sql_insert_already_friend(
+        await Database().sql_insert_already_friend(
             owner_id=owner_id,
             friended_tg_id=call.from_user.id
         )
-        Database().update_report_count_by_friend(ID=owner_id)
-        Database().delete_user_complain()
+        await Database().update_report_count_by_friend(ID=owner_id)
+        await Database().delete_user_complain()
         await call.message.reply('Данному пользователю снялась жалоба'
                                  '\nна 1 единицу🙌🙌')
         await bot.delete_message(chat_id=call.message.chat.id,

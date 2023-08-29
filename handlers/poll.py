@@ -6,7 +6,7 @@ from config import PollState
 
 
 async def fsm_poll_start(message: types.Message):
-    telegram = Database().sql_select_admin_list()
+    telegram = await Database().sql_select_admin_list()
     result = tuple(d['admin_tg_id'] for d in telegram)
     if message.from_user.id in result:
         await message.reply('Админ не может пройти опрос!')
@@ -25,7 +25,7 @@ async def load_idea(message: types.Message,state: FSMContext):
 async def load_problems(message: types.Message,state: FSMContext):
     async with state.proxy() as data:
         data['problems'] = message.text
-        Database().sql_insert_poll_answers(idea=data['idea'],
+        await Database().sql_insert_poll_answers(idea=data['idea'],
                                            problems=data['problems'],
                                            telegram_id=message.from_user.id)
     await message.reply('Ваш ответ принят!')

@@ -41,6 +41,3 @@ class CarsScraping:
 
 
 
-if __name__ == "__main__":
-    scraper = CarsScraping()
-    asyncio.run(scraper.parse_data())

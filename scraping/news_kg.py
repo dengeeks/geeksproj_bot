@@ -15,7 +15,3 @@ class NewsScraper:
             data.append(f'https://24.kg' + link)
         return data[:5]
 
-
-if __name__ == '__main__':
-    scraper = NewsScraper()
-    scraper.parse_data()

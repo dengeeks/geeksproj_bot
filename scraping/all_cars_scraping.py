@@ -44,7 +44,3 @@ class AllCarsScraping:
         async with httpx.AsyncClient(headers=self.HEADERS) as client:
             await self.get_url(client=client, url=self.START_URL)
 
-
-if __name__ == "__main__":
-    scraper = AllCarsScraping()
-    asyncio.run(scraper.parse_data())
